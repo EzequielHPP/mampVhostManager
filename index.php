@@ -34,7 +34,7 @@ if ($vhostsFile != '') {
 
 $sections = array(
     'ServerAdmin ' => 'email@here.com',
-    'DocumentRoot ' => $docroot,
+    'DocumentRoot ' => 'Root directory of website',
     'ServerName ' => 'urlhere.com',
     'ErrorLog ' => '',
     'CustomLog ' => ''

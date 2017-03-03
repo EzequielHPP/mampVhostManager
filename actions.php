@@ -24,7 +24,7 @@ if(isset($_GET['addenewhost'])){
         $templateData = "\n" . '# '.$postArray->hostname.'' . "\n";
         $templateData .= '<VirtualHost *:80>' . "\n";
         $templateData .= "    " . 'ServerAdmin ' . $postArray->ServerAdmin . "\n";
-        $templateData .= "    " . 'DocumentRoot "/Applications/MAMP/htdocs/Sites/' . str_replace('//','/',str_replace('/Applications/MAMP/htdocs/Sites/','',$postArray->DocumentRoot)) . '"' . "\n";
+        $templateData .= "    " . 'DocumentRoot "'. $postArray->DocumentRoot . '"' . "\n";
         $templateData .= "    " . 'ServerName ' . $postArray->ServerName . "\n";
         $templateData .= "    " . 'ErrorLog "/Applications/MAMP/logs/' . $postArray->ServerName . '-error_log"' . "\n";
         $templateData .= "    " . 'CustomLog "/Applications/MAMP/logs/' . $postArray->ServerName . '-access_log" common' . "\n";
