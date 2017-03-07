@@ -46,7 +46,7 @@ $sections = array(
 <head>
     <meta charset="UTF-8">
     <title>MAMP Virtual Host manager</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 
 </head>
 <body>
@@ -62,28 +62,7 @@ $sections = array(
         </div>
     </div>
     <div class="row">
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        Virtual Hosts
-                    </h3>
-                </div>
-                <div class="panel-body">
-                    <ul>
-                        <?php
-                        foreach ($hosts as $host => $data) {
-                            if ($host != '' && trim($host) != 'MAMP Admin') {
-                                echo '<li class="showVHost" data-host="' . md5($host) . '">' . trim($host) . '</li>';
-                            }
-                        }
-                        ?>
-                        <li class="showVHost" data-host="addHost">+ Add a new host</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-8">
+        <div class="col-sm-12">
             <?php
             foreach ($hosts as $host => $data) {
                 if ($host != '' && trim($host) != 'MAMP Admin') {
@@ -92,35 +71,45 @@ $sections = array(
                     $data = str_replace('</VirtualHost>', '', $data);
                     $dataExploded = explode(' ', $data);
                     $nextSection = '';
-                    ?>
-                    <form role="form" id="<?php echo md5($host); ?>" style="display:none">
-                        <div>
-                        <?php
 
-                            foreach ($dataExploded as $line) {
-                                $line = str_replace('<','',$line);
-                                // $line = str_replace('*:80>','',$line);
-                                $line = trim($line);
-                                if (strlen($line) > 6) {
-                                    $matched = false;
-                                    foreach ($sections as $section => $placeholder) {
-                                        // echo trim(strtolower($section)).' == '.trim(strtolower($line)).'<br> ';
-                                        if (trim(strtolower($section)) == trim(strtolower($line))) {
-                                            $matched = true;
-                                        }
-                                    }
-                                    // echo '---------------------<br>';
-                                    if (!$matched) {
-                                        $currentSections[trim(strtolower($nextSection))] = trim(str_replace('"', '', $line));
-                                    } else {
-                                        $nextSection = trim(strtolower($line));
-                                        $currentSections[trim(strtolower($nextSection))] = '';
-                                    }
+                    foreach ($dataExploded as $line) {
+                        $line = str_replace('<','',$line);
+                        $line = trim($line);
+                        if (strlen($line) > 6) {
+                            $matched = false;
+                            foreach ($sections as $section => $placeholder) {
+                                if (trim(strtolower($section)) == trim(strtolower($line))) {
+                                    $matched = true;
                                 }
                             }
+                            if (!$matched) {
+                                $currentSections[trim(strtolower($nextSection))] = trim(str_replace('"', '', $line));
+                            } else {
+                                $nextSection = trim(strtolower($line));
+                                $currentSections[trim(strtolower($nextSection))] = '';
+                            }
+                        }
+                    }
 
-                        ?>
+                    if(rand(0,10) < 5){
+                        $img = 'grayscale';
+                    } else {
+                        $img = 'sepia';
+                    }
+
+                    $tmp = rand(0,2);
+                    $array = ['nature','tech','arch'];
+                    $what = $array[$tmp];
+
+                    ?>
+                    <div class="card" style="width: 20rem; float:left; margin:10px;">
+                        <img class="card-img-top" src="https://placeimg.com/318/180/<?php echo $what; ?>/<?php echo $img; ?>" alt="Card image cap">
+                        <div class="card-block">
+                            <h4 class="card-title"><?php echo $host; ?></h4>
+                            <a href="http://<?php echo $currentSections['servername']; ?>" class="btn btn-primary" target="_blank">Go to website</a>
                         </div>
+                    </div>
+                    <form role="form" id="<?php echo md5($host); ?>" style="display:none">
                         <div class="form-group">
 
                             <label for="exampleInputEmail1">
@@ -152,7 +141,19 @@ $sections = array(
                     <?php
                 }
             };
+
+            $tmp = rand(0,2);
+            $array = ['nature','tech','arch'];
+            $what = $array[$tmp];
             ?>
+
+            <div class="card" style="width: 20rem; float:left; margin:10px;">
+                <img class="card-img-top" src="https://placeimg.com/318/180/<?php echo $what; ?>/<?php echo $img; ?>" alt="Card image cap">
+                <div class="card-block">
+                    <h4 class="card-title">New Website</h4>
+
+                </div>
+            </div>
             <form role="form" id="addHost" style="display:none">
                 <div class="form-group">
 
@@ -183,8 +184,9 @@ $sections = array(
         </div>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
 <script>
     $(document).ready(function () {
         $('li.showVHost').click(function () {
