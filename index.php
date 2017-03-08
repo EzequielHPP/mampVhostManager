@@ -106,11 +106,12 @@ $sections = array(
                         <img class="card-img-top" src="https://placeimg.com/318/180/<?php echo $what; ?>/<?php echo $img; ?>" alt="Card image cap">
                         <div class="card-block">
                             <h4 class="card-title"><?php echo $host; ?></h4>
-                            <a href="http://<?php echo $currentSections['servername']; ?>" class="btn btn-primary" target="_blank">Go to website</a>
+                            <a href="http://<?php echo $currentSections['servername']; ?>" class="btn btn-primary" target="_blank">Open</a>
                             <a href="#<?php echo md5($host); ?>" class="btn btn-info js-showForm">Update</a>
+                            <a href="#<?php echo md5($host); ?>" class="btn btn-danger js-remove">x</a>
                         </div>
                     </div>
-                    <div id="<?php echo md5($host); ?>" class="modal fade" tabindex="-1" role="dialog">
+                    <div id="<?php echo md5($host); ?>" class="modal fade real-content" tabindex="-1" role="dialog">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
 
@@ -147,7 +148,7 @@ $sections = array(
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-primary">Save changes</button>
+                                        <button type="submit" class="btn btn-primary save-changes">Save changes</button>
                                     </div>
                                 </form>
                             </div><!-- /.modal-content -->
@@ -212,7 +213,7 @@ $sections = array(
         </div>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
 <script src="/js/main.js"></script>
