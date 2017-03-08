@@ -17,12 +17,20 @@ if ($vhostsFile != '') {
 
         foreach ($array as $host) {
             $title = substr($host, 0, strpos($host, '<'));
+            $category = '';
+            if(strpos($title,'|') > 0){
+                $split = explode('|',$title);
+                $title = $split[0];
+                $category = $split[1];
+            }
             $hostDataSplit = explode('<VirtualHost *:80>', $host);
             if (isset($hostDataSplit[1])) {
                 $hostData = '<VirtualHost *:80>' . $hostDataSplit[1];
             } else {
                 $hostData = $hostDataSplit;
             }
+
+
 
             $hosts[$title] = $hostData;
         }

@@ -47,7 +47,7 @@ if(isset($_GET['updatehosts'])){
     if(is_array($postArray)){
         $template = file_get_contents($vhostsTemplateFolder . 'vconf.template.conf');
         foreach($postArray as $vHost){
-            $template .= "\n" . '# ' . $vHost->hostname . '' . "\n";
+            $template .= "\n" . '# ' . $vHost->hostname . ' | '. ((property_exists($vHost,'category'))?$vHost->category:'') . "\n";
             $template .= '<VirtualHost *:80>' . "\n";
             $template .= "    " . 'ServerAdmin ' . $vHost->ServerAdmin . "\n";
             $template .= "    " . 'DocumentRoot "' . $vHost->DocumentRoot . '"' . "\n";
@@ -68,7 +68,7 @@ if(isset($_GET['updatehosts'])){
         } else {
             $vhostsFile = file_get_contents($vhostsLocation . $vhostsFileName);
 
-            $templateData = "\n" . '# ' . $postArray->hostname . '' . "\n";
+            $templateData = "\n" . '# ' . $postArray->hostname . ' | '. ((property_exists($vHost,'category'))?$vHost->category:'') .  "\n";
             $templateData .= '<VirtualHost *:80>' . "\n";
             $templateData .= "    " . 'ServerAdmin ' . $postArray->ServerAdmin . "\n";
             $templateData .= "    " . 'DocumentRoot "' . $postArray->DocumentRoot . '"' . "\n";
