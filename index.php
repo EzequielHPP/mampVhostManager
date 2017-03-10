@@ -107,11 +107,7 @@ $sections = array(
                         }
                     }
 
-                    if (rand(0, 10) < 5) {
-                        $img = 'grayscale';
-                    } else {
-                        $img = 'sepia';
-                    }
+                    $img = 'sepia';
 
                     $tmp = rand(0, sizeof($categories) - 1);
                     if (in_array($tmpData['data']['category'], $categories)) {
@@ -120,9 +116,15 @@ $sections = array(
                         $what = $categories[$tmp];
                     }
 
+                    $rand = rand(20, 60);
+                    $diff = 180 + ($rand - 20);
+
+
                     ?>
                     <div class="card" style="width: 20rem; float:left; margin:10px;">
-                        <img class="card-img-top" src="https://placeimg.com/318/180/<?php echo $what; ?>/<?php echo $img; ?>" alt="Card image cap">
+                        <div style="width:318px; height:180px; overflow: hidden;">
+                            <img class="card-img-top" src="https://placeimg.com/3<?php echo $rand; ?>/<?php echo $diff; ?>/<?php echo $what; ?>/<?php echo $img; ?>" alt="Card image cap">
+                        </div>
                         <div class="card-block">
                             <h4 class="card-title"><?php echo $host; ?></h4>
                             <a href="http://<?php echo $currentSections['servername']; ?>" class="btn btn-primary" target="_blank">Open</a>
@@ -156,7 +158,9 @@ $sections = array(
                                                 <?php
                                                 foreach ($categories as $index => $value) {
                                                     ?>
-                                                    <option value="<?php echo $value; ?>" <?php if($tmpData['data']['category'] == $value){ echo 'selected="selected"'; }; ?>><?php echo $categoriesNames[$index]; ?></option>
+                                                    <option value="<?php echo $value; ?>" <?php if ($tmpData['data']['category'] == $value) {
+                                                        echo 'selected="selected"';
+                                                    }; ?>><?php echo $categoriesNames[$index]; ?></option>
                                                     <?php
                                                 };
                                                 ?>
