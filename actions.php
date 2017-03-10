@@ -47,7 +47,7 @@ if(isset($_GET['updatehosts'])){
     if(is_array($postArray)){
         $template = file_get_contents($vhostsTemplateFolder . 'vconf.template.conf');
         foreach($postArray as $vHost){
-            $template .= "\n" . '# ' . $vHost->hostname . ' | '. ((property_exists($vHost,'category'))?$vHost->category:'') . "\n";
+            $template .= "\n" . '# ' . $vHost->hostname . ' | '. $vHost->category . "\n";
             $template .= '<VirtualHost *:80>' . "\n";
             $template .= "    " . 'ServerAdmin ' . $vHost->ServerAdmin . "\n";
             $template .= "    " . 'DocumentRoot "' . $vHost->DocumentRoot . '"' . "\n";

@@ -51,8 +51,6 @@ function updateAllvHosts(){
         "content": JSON.stringify(json)
     };
 
-    console.log(data);
-
     $.ajax({
         type: "POST",
         url: '/actions.php?updatehosts=true',
@@ -120,6 +118,13 @@ function buildJson(justNewHost) {
                 tmpvhost[$(this).attr('name')] = $(this).val();
             }
         });
+        $(this).find('select').each(function(){
+            if($(this).find(":selected").val() != ''){
+                tmpvhost[$(this).attr('name')] = $(this).find(":selected").val();
+            }
+        });
+
+        console.log(tmpvhost);
 
         if(!justNewHost && tmpvhost['hostname'] != undefined){
             json.push(tmpvhost);

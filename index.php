@@ -7,6 +7,9 @@ $vhostsFileName = 'httpd-vhosts.conf';
 
 $vhostsFile = file_get_contents($vhostsLocation . $vhostsFileName);
 
+$categories = ['nature', 'tech', 'arch', 'animals', 'people'];
+$categoriesNames = ['Nature', 'Technology', 'Architecture', 'Animals', 'People'];
+
 if ($vhostsFile != '') {
     if (strpos($vhostsFile, '#START WEBSITES HERE') !== false) {
         copy($vhostsLocation . $vhostsFileName, __DIR__ . '/files/' . $vhostsFileName);
@@ -18,18 +21,20 @@ if ($vhostsFile != '') {
         foreach ($array as $host) {
             $title = substr($host, 0, strpos($host, '<'));
             $category = '';
-            if(strpos($title,'|') > 0){
-                $split = explode('|',$title);
-                $title = $split[0];
-                $category = $split[1];
+            if (strpos($title, '|') > 0) {
+                $split = explode('|', $title);
+                $title = trim($split[0]);
+                $category = trim($split[1]);
             }
             $hostDataSplit = explode('<VirtualHost *:80>', $host);
             if (isset($hostDataSplit[1])) {
-                $hostData = '<VirtualHost *:80>' . $hostDataSplit[1];
+                $hostData = array('data' => array(), 'html' => '<VirtualHost *:80>' . $hostDataSplit[1]);
             } else {
-                $hostData = $hostDataSplit;
+                $hostData = array('data' => array(), 'html' => $hostDataSplit);
             }
 
+            $hostData['data']['title'] = $title;
+            $hostData['data']['category'] = $category;
 
 
             $hosts[$title] = $hostData;
@@ -72,8 +77,11 @@ $sections = array(
     <div class="row">
         <div class="col-sm-12">
             <?php
-            foreach ($hosts as $host => $data) {
+            foreach ($hosts as $host => $tmpData) {
                 if ($host != '' && trim($host) != 'MAMP Admin') {
+
+                    $data = $tmpData['html'];
+
                     $currentSections = array();
                     $data = str_replace(' common', '', $data);
                     $data = str_replace('</VirtualHost>', '', $data);
@@ -105,9 +113,12 @@ $sections = array(
                         $img = 'sepia';
                     }
 
-                    $tmp = rand(0, 2);
-                    $array = ['nature', 'tech', 'arch'];
-                    $what = $array[$tmp];
+                    $tmp = rand(0, sizeof($categories) - 1);
+                    if (in_array($tmpData['data']['category'], $categories)) {
+                        $what = $tmpData['data']['category'];
+                    } else {
+                        $what = $categories[$tmp];
+                    }
 
                     ?>
                     <div class="card" style="width: 20rem; float:left; margin:10px;">
@@ -135,6 +146,21 @@ $sections = array(
                                                 Host:
                                             </label>
                                             <input type="text" class="form-control" id="hostname" name="hostname" value="<?php echo trim($host); ?>"/>
+                                        </div>
+                                        <div class="form-group">
+
+                                            <label for="category">
+                                                Category:
+                                            </label>
+                                            <select name="category">
+                                                <?php
+                                                foreach ($categories as $index => $value) {
+                                                    ?>
+                                                    <option value="<?php echo $value; ?>" <?php if($tmpData['data']['category'] == $value){ echo 'selected="selected"'; }; ?>><?php echo $categoriesNames[$index]; ?></option>
+                                                    <?php
+                                                };
+                                                ?>
+                                            </select>
                                         </div>
                                         <?php
                                         foreach ($sections as $section => $placeholder) {
@@ -166,9 +192,6 @@ $sections = array(
                 }
             };
 
-            $tmp = rand(0, 2);
-            $array = ['nature', 'tech', 'arch'];
-            $what = $array[$tmp];
             ?>
             <div class="card" style="width: 20rem; float:left; margin:10px;">
                 <img class="card-img-top" src="http://placehold.it/318x180?text=New+VHost" alt="Card image cap">
@@ -193,6 +216,17 @@ $sections = array(
                                         Host:
                                     </label>
                                     <input type="text" class="form-control" id="hostname" name="hostname" value="" placeholder="Name Of The Host"/>
+                                </div>
+                                <div class="form-group">
+
+                                    <label for="category">
+                                        Category:
+                                    </label>
+                                    <select name="category">
+                                        <option value="arch">Architecture</option>
+                                        <option value="tech">Technology</option>
+                                        <option value="nature">Nature</option>
+                                    </select>
                                 </div>
                                 <?php
                                 foreach ($sections as $section => $placeholder) {
