@@ -6,6 +6,8 @@
  * Time: 11:39
  */
 
+include('vendor/autoload.php');
+
 $vhostsLocation = '/Applications/MAMP/conf/apache/extra/';
 $vhostsTemplateFolder = 'templates/';
 $vhostsFileName = 'httpd-vhosts.conf';
@@ -15,15 +17,14 @@ if(isset($_GET['addenewhost'])){
     $postArray = json_decode($_POST['content']);
     $return = array();
 
-    if(!isset($postArray->ServerAdmin) || !isset($postArray->DocumentRoot) || !isset($postArray->ServerName)){
-        var_dump($postArray);
+    if(!isset($postArray->DocumentRoot) || !isset($postArray->ServerName)){
         $return = array('status'=>'failed','message'=>'missing parameters');
     } else {
         $vhostsFile = file_get_contents($vhostsLocation . $vhostsFileName);
 
-        $templateData = "\n" . '# '.$postArray->hostname.'' . "\n";
+        $templateData = "\n" . '# '.$postArray->hostname . ' | '. $postArray->category . "\n";
         $templateData .= '<VirtualHost *:80>' . "\n";
-        $templateData .= "    " . 'ServerAdmin ' . $postArray->ServerAdmin . "\n";
+        $templateData .= "    " . 'ServerAdmin email@email.com' . "\n";
         $templateData .= "    " . 'DocumentRoot "'. $postArray->DocumentRoot . '"' . "\n";
         $templateData .= "    " . 'ServerName ' . $postArray->ServerName . "\n";
         $templateData .= "    " . 'ErrorLog "/Applications/MAMP/logs/' . $postArray->ServerName . '-error_log"' . "\n";
@@ -32,6 +33,8 @@ if(isset($_GET['addenewhost'])){
 
         $vhostsFile .= $templateData;
         file_put_contents($vhostsLocation . $vhostsFileName, $vhostsFile);
+
+        //shell_exec('/Applications/MAMP/bin/stop.sh; /Applications/MAMP/bin/start.sh;');
 
         $return = array('status' => 'success', 'message' => '');
     }
@@ -49,7 +52,7 @@ if(isset($_GET['updatehosts'])){
         foreach($postArray as $vHost){
             $template .= "\n" . '# ' . $vHost->hostname . ' | '. $vHost->category . "\n";
             $template .= '<VirtualHost *:80>' . "\n";
-            $template .= "    " . 'ServerAdmin ' . $vHost->ServerAdmin . "\n";
+            $template .= "    " . 'ServerAdmin email@email.com' . "\n";
             $template .= "    " . 'DocumentRoot "' . $vHost->DocumentRoot . '"' . "\n";
             $template .= "    " . 'ServerName ' . $vHost->ServerName . "\n";
             $template .= "    " . 'ErrorLog "/Applications/MAMP/logs/' . $vHost->ServerName . '-error_log"' . "\n";
@@ -62,7 +65,7 @@ if(isset($_GET['updatehosts'])){
         $return = array('status' => 'success', 'message' => '');
 
     } else {
-        if (!isset($postArray->ServerAdmin) || !isset($postArray->DocumentRoot) || !isset($postArray->ServerName)) {
+        if (!isset($postArray->DocumentRoot) || !isset($postArray->ServerName)) {
             var_dump($postArray);
             $return = array('status' => 'failed', 'message' => 'missing parameters');
         } else {
@@ -70,7 +73,7 @@ if(isset($_GET['updatehosts'])){
 
             $templateData = "\n" . '# ' . $postArray->hostname . ' | '. ((property_exists($vHost,'category'))?$vHost->category:'') .  "\n";
             $templateData .= '<VirtualHost *:80>' . "\n";
-            $templateData .= "    " . 'ServerAdmin ' . $postArray->ServerAdmin . "\n";
+            $templateData .= "    " . 'ServerAdmin email@email.com' . "\n";
             $templateData .= "    " . 'DocumentRoot "' . $postArray->DocumentRoot . '"' . "\n";
             $templateData .= "    " . 'ServerName ' . $postArray->ServerName . "\n";
             $templateData .= "    " . 'ErrorLog "/Applications/MAMP/logs/' . $postArray->ServerName . '-error_log"' . "\n";
