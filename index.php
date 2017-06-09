@@ -95,7 +95,7 @@ $sections = array(
         <div class="col-sm-12">
 			<?php
 			foreach ( $hosts as $tmpData ) {
-				if ( $tmpData['title'] != '' && strpos( strtolower( $tmpData['title'] ), 'mamp' ) === false ) {
+				if ( $tmpData['title'] != '' ) {
 
 					$img = 'sepia';
 
