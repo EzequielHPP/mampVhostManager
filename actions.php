@@ -32,7 +32,6 @@ if(isset($_GET['addenewhost'])){
 	    $templateData .= "    " . '<Directory "'. $postArray->DocumentRoot . '">' . "\n";
 	    $templateData .= "    " . '    Options Indexes FollowSymLinks' . "\n";
         $templateData .= "    " . '    AllowOverride All' . "\n";
-	    $templateData .= "    " . '    Require all granted' . "\n";
 	    $templateData .= "    " . '</Directory>' . "\n";
         $templateData .= '</VirtualHost>' . "\n";
 
@@ -63,7 +62,6 @@ if(isset($_GET['updatehosts'])){
 	        $template .= "    " . '<Directory "'. $vHost->DocumentRoot . '">' . "\n";
 	        $template .= "    " . '    Options Indexes FollowSymLinks' . "\n";
 	        $template .= "    " . '    AllowOverride All' . "\n";
-	        $template .= "    " . '    Require all granted' . "\n";
 	        $template .= "    " . '</Directory>' . "\n";
             $template .= '</VirtualHost>' . "\n";
         }
@@ -89,7 +87,6 @@ if(isset($_GET['updatehosts'])){
 	        $templateData .= "    " . '<Directory "'. $postArray->DocumentRoot . '">' . "\n";
 	        $templateData .= "    " . '    Options Indexes FollowSymLinks' . "\n";
 	        $templateData .= "    " . '    AllowOverride All' . "\n";
-	        $templateData .= "    " . '    Require all granted' . "\n";
 	        $templateData .= "    " . '</Directory>' . "\n";
             $templateData .= '</VirtualHost>' . "\n";
 
