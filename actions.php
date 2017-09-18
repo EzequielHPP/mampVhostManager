@@ -29,12 +29,15 @@ if(isset($_GET['addenewhost'])){
         $templateData .= "    " . 'ServerName ' . $postArray->ServerName . "\n";
         $templateData .= "    " . 'ErrorLog "/Applications/MAMP/logs/' . $postArray->ServerName . '-error_log"' . "\n";
         $templateData .= "    " . 'CustomLog "/Applications/MAMP/logs/' . $postArray->ServerName . '-access_log" common' . "\n";
+	    $templateData .= "    " . '<Directory "'. $postArray->DocumentRoot . '">' . "\n";
+	    $templateData .= "    " . '    Options Indexes FollowSymLinks' . "\n";
+        $templateData .= "    " . '    AllowOverride All' . "\n";
+	    $templateData .= "    " . '    Require all granted' . "\n";
+	    $templateData .= "    " . '</Directory>' . "\n";
         $templateData .= '</VirtualHost>' . "\n";
 
         $vhostsFile .= $templateData;
         file_put_contents($vhostsLocation . $vhostsFileName, $vhostsFile);
-
-        //shell_exec('/Applications/MAMP/bin/stop.sh; /Applications/MAMP/bin/start.sh;');
 
         $return = array('status' => 'success', 'message' => '');
     }
@@ -57,6 +60,11 @@ if(isset($_GET['updatehosts'])){
             $template .= "    " . 'ServerName ' . $vHost->ServerName . "\n";
             $template .= "    " . 'ErrorLog "/Applications/MAMP/logs/' . $vHost->ServerName . '-error_log"' . "\n";
             $template .= "    " . 'CustomLog "/Applications/MAMP/logs/' . $vHost->ServerName . '-access_log" common' . "\n";
+	        $template .= "    " . '<Directory "'. $vHost->DocumentRoot . '">' . "\n";
+	        $template .= "    " . '    Options Indexes FollowSymLinks' . "\n";
+	        $template .= "    " . '    AllowOverride All' . "\n";
+	        $template .= "    " . '    Require all granted' . "\n";
+	        $template .= "    " . '</Directory>' . "\n";
             $template .= '</VirtualHost>' . "\n";
         }
 
@@ -78,6 +86,11 @@ if(isset($_GET['updatehosts'])){
             $templateData .= "    " . 'ServerName ' . $postArray->ServerName . "\n";
             $templateData .= "    " . 'ErrorLog "/Applications/MAMP/logs/' . $postArray->ServerName . '-error_log"' . "\n";
             $templateData .= "    " . 'CustomLog "/Applications/MAMP/logs/' . $postArray->ServerName . '-access_log" common' . "\n";
+	        $templateData .= "    " . '<Directory "'. $postArray->DocumentRoot . '">' . "\n";
+	        $templateData .= "    " . '    Options Indexes FollowSymLinks' . "\n";
+	        $templateData .= "    " . '    AllowOverride All' . "\n";
+	        $templateData .= "    " . '    Require all granted' . "\n";
+	        $templateData .= "    " . '</Directory>' . "\n";
             $templateData .= '</VirtualHost>' . "\n";
 
             $vhostsFile .= $templateData;
@@ -88,4 +101,8 @@ if(isset($_GET['updatehosts'])){
     }
 
     echo json_encode($return);
+}
+
+if(isset($_GET['restart'])){
+	//shell_exec('/Applications/MAMP/bin/restart.sh;');
 }

@@ -58,6 +58,7 @@ function updateAllvHosts(){
         success: function (response) {
             var responseDetails = JSON.parse(response);
             if (responseDetails.status == 'success') {
+                // restart();
                 refresh();
             } else {
                 alert(responseDetails.message);
@@ -66,6 +67,19 @@ function updateAllvHosts(){
         fail: function (response) {
             console.log(response);
             alert('Couldn\'t save the brand at the moment');
+        }
+    });
+}
+
+function restart(){
+    $.ajax({
+        type: "GET",
+        url: '/actions.php?restart=true',
+        success: function (response) {
+
+        },
+        fail: function (response) {
+
         }
     });
 }
