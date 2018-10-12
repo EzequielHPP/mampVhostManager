@@ -2,72 +2,32 @@
 $hosts = array();
 
 $vhostsLocation = '/Applications/MAMP/conf/apache/extra/';
-$docroot        = '/Applications/MAMP/htdocs/';
+$docroot = '/Applications/MAMP/htdocs/';
 $vhostsFileName = 'httpd-vhosts.conf';
 
-$vhostsFile = file_get_contents( $vhostsLocation . $vhostsFileName );
+$categories = ['nature', 'tech', 'arch', 'animals', 'people'];
+$categoriesNames = ['Nature', 'Technology', 'Architecture', 'Animals', 'People'];
 
-$categories      = [ 'nature', 'tech', 'arch', 'animals', 'people' ];
-$categoriesNames = [ 'Nature', 'Technology', 'Architecture', 'Animals', 'People' ];
+copy($vhostsLocation . $vhostsFileName, __DIR__ . '/files/' . $vhostsFileName . '.bkp');
 
-if ( $vhostsFile != '' ) {
-	if ( strpos( $vhostsFile, '#START WEBSITES HERE' ) !== false ) {
-		copy( $vhostsLocation . $vhostsFileName, __DIR__ . '/files/' . $vhostsFileName );
-		$hostsData  = explode( '#START WEBSITES HERE', $vhostsFile );
-		$hostsSplit = $hostsData[1];
+$hosts = json_decode(file_get_contents('hosts.json'));
 
-		// Explode each site trough #
-		$array = explode( '#', $hostsSplit );
-
-		preg_match_all( "/#(.*?)\\n/i", $hostsSplit, $hosts_r );
-		$hosts_r = $hosts_r[0];
-//		echo '<pre>';
-//		var_dump( $hosts_r[0] );
-//		echo '</pre>';
-
-		$hosts = array();
-
-		foreach ( $hosts_r as $index => $host ) {
-			$tmp_host = array();
-			//Get Position
-			$pos       = strpos( $hostsSplit, $host );
-			$nextIndex = $index * 1 + 1;
-			if ( isset( $hosts_r[ $nextIndex ] ) ) {
-				$nextPos = strpos( $hostsSplit, $hosts_r[ $nextIndex ] );
-			} else {
-				$nextPos = strlen( $hostsSplit );
-			}
-			// Get the content
-			$hostContent = substr( $hostsSplit, $pos, ( $nextPos - $pos ) );
-
-			preg_match_all( "/#(.*?)\|/i", $hostContent, $tmp_title );
-			preg_match_all( "/\|(.*?)\\n/i", $hostContent, $tmp_section );
-			preg_match_all( "/ServerAdmin(.*?)\\n/i", $hostContent, $tmp_admin );
-			preg_match_all( "/DocumentRoot(.*?)\\n/i", $hostContent, $tmp_root );
-			preg_match_all( "/ServerName(.*?)\\n/i", $hostContent, $tmp_name );
-			preg_match_all( "/ErrorLog(.*?)\\n/i", $hostContent, $tmp_error );
-			preg_match_all( "/CustomLog(.*?)\\n/i", $hostContent, $tmp_custom );
-
-			$tmp_host['title']        = trim( $tmp_title[1][0] );
-			$tmp_host['category']     = trim( $tmp_section[1][0] );
-			$tmp_host['ServerAdmin']  = trim( $tmp_admin[1][0] );
-			$tmp_host['DocumentRoot'] = trim( str_replace( '"', '', $tmp_root[1][0] ) );
-			$tmp_host['ServerName']   = trim( $tmp_name[1][0] );
-			$tmp_host['ErrorLog']     = trim( $tmp_error[1][0] );
-			$tmp_host['CustomLog']    = trim( $tmp_custom[1][0] );
-
-			$hosts[] = $tmp_host;
-		}
-	} else {
-		copy( __DIR__ . '/files/' . $vhostsFileName, $vhostsLocation . $vhostsFileName );
-		echo '<script>window.location = window.location</script>';
-	}
+$changed = false;
+foreach ($hosts as $index => $host) {
+    if ($host->id == "") {
+        $changed = true;
+        $hosts[$index]->id = md5($host->title . $host->url);
+    }
+}
+if ($changed) {
+    file_put_contents('hosts.json', json_encode($hosts));
 }
 
 $sections = array(
-	'DocumentRoot ' => 'Root directory of website',
-	'ServerName '   => 'urlhere.com'
-)
+    'location ' => 'Root directory of website',
+    'url ' => 'urlhere.com'
+);
+
 
 ?>
 <!DOCTYPE html>
@@ -93,24 +53,24 @@ $sections = array(
     </div>
     <div class="row">
         <div class="col-sm-12">
-			<?php
-			foreach ( $hosts as $tmpData ) {
-				if ( $tmpData['title'] != '' ) {
+            <?php
+            foreach ($hosts as $tmpData) {
+                if ($tmpData->title != '') {
 
-					$img = 'sepia';
+                    $img = 'sepia';
 
-					$tmp = rand( 0, sizeof( $categories ) - 1 );
-					if ( in_array( $tmpData['category'], $categories ) ) {
-						$what = $tmpData['category'];
-					} else {
-						$what = $categories[ $tmp ];
-					}
+                    $tmp = rand(0, sizeof($categories) - 1);
+                    if (in_array($tmpData->category, $categories)) {
+                        $what = $tmpData->category;
+                    } else {
+                        $what = $categories[$tmp];
+                    }
 
-					$rand = rand( 20, 60 );
-					$diff = 180 + ( $rand - 20 );
+                    $rand = rand(20, 60);
+                    $diff = 180 + ($rand - 20);
 
 
-					?>
+                    ?>
                     <div class="card" style="width: 20rem; float:left; margin:10px;">
                         <div style="width:318px; height:180px; overflow: hidden;">
                             <img class="card-img-top"
@@ -118,72 +78,73 @@ $sections = array(
                                  alt="Card image cap">
                         </div>
                         <div class="card-block">
-                            <h4 class="card-title"><?php echo $tmpData['title']; ?></h4>
-                            <a href="http://<?php echo $tmpData['ServerName']; ?>" class="btn btn-primary"
+                            <h4 class="card-title"><?php echo $tmpData->title; ?></h4>
+                            <a href="http://<?php echo $tmpData->url; ?>" class="btn btn-primary"
                                target="_blank">Open</a>
-                            <a href="#<?php echo md5( $tmpData['title'] ); ?>"
+                            <a href="#<?php echo $tmpData->id; ?>"
                                class="btn btn-info js-showForm">Update</a>
-                            <a href="#<?php echo md5( $tmpData['title'] ); ?>" class="btn btn-danger js-remove">x</a>
+                            <a href="#<?php echo $tmpData->id; ?>" class="btn btn-danger js-remove">x</a>
                         </div>
                     </div>
-                    <div id="<?php echo md5( $tmpData['title'] ); ?>" class="modal fade real-content" tabindex="-1"
+                    <div id="<?php echo $tmpData->id; ?>" class="modal fade real-content" tabindex="-1"
                          role="dialog">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
 
                                 <form role="form">
+                                    <input type="hidden" name="id" value="<?php echo $tmpData->id; ?>">
                                     <div class="modal-header">
-                                        <h4><?php echo $tmpData['title']; ?></h4>
+                                        <h4><?php echo $tmpData->title; ?></h4>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span></button>
                                     </div>
                                     <div class="modal-body">
                                         <div class="form-group">
 
-                                            <label for="exampleInputEmail1">
+                                            <label for="hostname">
                                                 Host:
                                             </label>
                                             <input type="text" class="form-control" id="hostname" name="hostname"
-                                                   value="<?php echo trim( $tmpData['title'] ); ?>"/>
+                                                   value="<?php echo trim($tmpData->title); ?>"/>
                                         </div>
                                         <div class="form-group">
 
                                             <label for="category">
                                                 Category:
                                             </label>
-                                            <select name="category">
-												<?php
-												foreach ( $categories as $index => $value ) {
-													?>
-                                                    <option value="<?php echo $value; ?>" <?php if ( $tmpData['category'] == $value ) {
-														echo 'selected="selected"';
-													}; ?>><?php echo $categoriesNames[ $index ]; ?></option>
-													<?php
-												};
-												?>
+                                            <select id="category" name="category">
+                                                <?php
+                                                foreach ($categories as $index => $value) {
+                                                    ?>
+                                                    <option value="<?php echo $value; ?>" <?php if ($tmpData->category == $value) {
+                                                        echo 'selected="selected"';
+                                                    }; ?>><?php echo $categoriesNames[$index]; ?></option>
+                                                    <?php
+                                                };
+                                                ?>
                                             </select>
                                         </div>
                                         <!-- Document Root -->
                                         <div class="form-group">
 
-                                            <label for="<?php echo md5( $tmpData['title'] ) . '-documentroot'; ?>">
+                                            <label for="<?php echo $tmpData->id . '-location'; ?>">
                                                 Document Root
                                             </label>
-                                            <input type="text" class="form-control" name="DocumentRoot"
+                                            <input type="text" class="form-control" name="location"
                                                    placeholder="/Applications/MAMP/htdocs/"
-                                                   id="<?php echo md5( $tmpData['title'] ) . '-documentroot'; ?>"
-                                                   value="<?php echo ( $tmpData['DocumentRoot'] == '' ) ? '/Applications/MAMP/htdocs' : $tmpData['DocumentRoot']; ?>"/>
+                                                   id="<?php echo $tmpData->id . '-location'; ?>"
+                                                   value="<?php echo ($tmpData->location == '') ? '/Applications/MAMP/htdocs' : $tmpData->location; ?>"/>
                                         </div>
                                         <!-- Server Name -->
                                         <div class="form-group">
 
-                                            <label for="<?php echo md5( $tmpData['title'] ) . '-servername'; ?>">
+                                            <label for="<?php echo $tmpData->id . '-url'; ?>">
                                                 Server URL
                                             </label>
-                                            <input type="text" class="form-control" name="ServerName"
+                                            <input type="text" class="form-control" name="url"
                                                    placeholder="something.com"
-                                                   id="<?php echo md5( $tmpData['title'] ) . '-servername'; ?>"
-                                                   value="<?php echo $tmpData['ServerName']; ?>"/>
+                                                   id="<?php echo $tmpData->id . '-url'; ?>"
+                                                   value="<?php echo $tmpData->url; ?>"/>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
@@ -195,11 +156,11 @@ $sections = array(
                             </div><!-- /.modal-content -->
                         </div><!-- /.modal-dialog -->
                     </div><!-- /.modal -->
-					<?php
-				};// If
-			};// foreach
+                    <?php
+                };// If
+            };// foreach
 
-			?>
+            ?>
             <div class="card" style="width: 20rem; float:left; margin:10px;">
                 <img class="card-img-top" src="http://placehold.it/318x180?text=New+VHost" alt="Card image cap">
                 <div class="card-block">
@@ -237,24 +198,24 @@ $sections = array(
                                         <option value="nature">Nature</option>
                                     </select>
                                 </div>
-								<?php
-								foreach ( $sections as $section => $placeholder ) {
-									if ( $placeholder != '' ) {
-										?>
+                                <?php
+                                foreach ($sections as $section => $placeholder) {
+                                    if ($placeholder != '') {
+                                        ?>
                                         <div class="form-group">
 
-                                            <label for="<?php echo 'addHost-' . trim( strtolower( $section ) ); ?>">
-												<?php echo $section; ?>
+                                            <label for="<?php echo 'addHost-' . trim(strtolower($section)); ?>">
+                                                <?php echo $section; ?>
                                             </label>
                                             <input type="text" class="form-control"
-                                                   name="<?php echo trim( $section ); ?>"
-                                                   id="<?php 'addHost-' . trim( strtolower( $section ) ); ?>"
+                                                   name="<?php echo trim($section); ?>"
+                                                   id="<?php 'addHost-' . trim(strtolower($section)); ?>"
                                                    placeholder="<?php echo $placeholder; ?>" value=""/>
                                         </div>
-										<?php
-									}
-								};
-								?>
+                                        <?php
+                                    }
+                                };
+                                ?>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

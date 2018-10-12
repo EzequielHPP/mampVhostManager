@@ -16,7 +16,29 @@ $(document).ready(function () {
     $('.save-changes').each(function(){
         $(this).click(function (e) {
             e.preventDefault();
-            updateAllvHosts();
+            // updateAllvHosts();
+            var data = {
+                "content": $(this).parents('form').serialize()
+            };
+
+            $.ajax({
+                type: "POST",
+                url: '/actions.php?updatehosts=true',
+                data: data,
+                success: function (response) {
+                    var responseDetails = JSON.parse(response);
+                    if (responseDetails.status == 'success') {
+                        // restart();
+                        refresh();
+                    } else {
+                        alert(responseDetails.message);
+                    }
+                },
+                fail: function (response) {
+                    console.log(response);
+                    alert('Couldn\'t save the brand at the moment');
+                }
+            });
         });
     });
 

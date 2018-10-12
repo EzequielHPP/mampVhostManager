@@ -2,3 +2,4 @@ httpd-vhosts.conf
 .DS_Store
 .idea
 /vendor/
+files/*.bkp
