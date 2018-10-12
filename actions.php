@@ -12,31 +12,36 @@ $vhostsLocation = '/Applications/MAMP/conf/apache/extra/';
 $vhostsTemplateFolder = 'templates/';
 $vhostsFileName = 'httpd-vhosts.conf';
 
-if(isset($_GET['addenewhost'])){
+if (isset($_GET['addenewhost'])) {
 
     $postArray = json_decode($_POST['content']);
     $return = array();
 
-    if(!isset($postArray->DocumentRoot) || !isset($postArray->ServerName)){
-        $return = array('status'=>'failed','message'=>'missing parameters');
+    if (!isset($postArray->DocumentRoot) || !isset($postArray->ServerName)) {
+        $return = array('status' => 'failed', 'message' => 'missing parameters');
     } else {
         $vhostsFile = file_get_contents($vhostsLocation . $vhostsFileName);
 
-        $templateData = "\n" . '# '.$postArray->hostname . ' | '. $postArray->category . "\n";
+        $templateData = "\n" . '# ' . $postArray->hostname . ' | ' . $postArray->category . "\n";
         $templateData .= '<VirtualHost *:80>' . "\n";
         $templateData .= "    " . 'ServerAdmin email@email.com' . "\n";
-        $templateData .= "    " . 'DocumentRoot "'. $postArray->DocumentRoot . '"' . "\n";
+        $templateData .= "    " . 'DocumentRoot "' . $postArray->DocumentRoot . '"' . "\n";
         $templateData .= "    " . 'ServerName ' . $postArray->ServerName . "\n";
         $templateData .= "    " . 'ErrorLog "/Applications/MAMP/logs/' . $postArray->ServerName . '-error_log"' . "\n";
         $templateData .= "    " . 'CustomLog "/Applications/MAMP/logs/' . $postArray->ServerName . '-access_log" common' . "\n";
-	    $templateData .= "    " . '<Directory "'. $postArray->DocumentRoot . '">' . "\n";
-	    $templateData .= "    " . '    Options Indexes FollowSymLinks' . "\n";
+        $templateData .= "    " . '<Directory "' . $postArray->DocumentRoot . '">' . "\n";
+        $templateData .= "    " . '    Options Indexes FollowSymLinks' . "\n";
         $templateData .= "    " . '    AllowOverride All' . "\n";
-	    $templateData .= "    " . '</Directory>' . "\n";
+        $templateData .= "    " . '</Directory>' . "\n";
         $templateData .= '</VirtualHost>' . "\n";
 
         $vhostsFile .= $templateData;
         file_put_contents($vhostsLocation . $vhostsFileName, $vhostsFile);
+
+        if (substr(sprintf('%o', fileperms('/etc/hosts')), -4) === '0777') {
+            @file_put_contents('/etc/hosts', '# ' . $postArray->hostname . "\n", FILE_APPEND);
+            @file_put_contents('/etc/hosts', '127.0.0.1     ' . $postArray->ServerName . "\n", FILE_APPEND);
+        }
 
         $return = array('status' => 'success', 'message' => '');
     }
@@ -44,25 +49,25 @@ if(isset($_GET['addenewhost'])){
     echo json_encode($return);
 }
 
-if(isset($_GET['updatehosts'])){
+if (isset($_GET['updatehosts'])) {
 
     $postArray = json_decode($_POST['content']);
     $return = array();
 
-    if(is_array($postArray)){
+    if (is_array($postArray)) {
         $template = file_get_contents($vhostsTemplateFolder . 'vconf.template.conf');
-        foreach($postArray as $vHost){
-            $template .= "\n" . '# ' . $vHost->hostname . ' | '. $vHost->category . "\n";
+        foreach ($postArray as $vHost) {
+            $template .= "\n" . '# ' . $vHost->hostname . ' | ' . $vHost->category . "\n";
             $template .= '<VirtualHost *:80>' . "\n";
             $template .= "    " . 'ServerAdmin email@email.com' . "\n";
             $template .= "    " . 'DocumentRoot "' . $vHost->DocumentRoot . '"' . "\n";
             $template .= "    " . 'ServerName ' . $vHost->ServerName . "\n";
             $template .= "    " . 'ErrorLog "/Applications/MAMP/logs/' . $vHost->ServerName . '-error_log"' . "\n";
             $template .= "    " . 'CustomLog "/Applications/MAMP/logs/' . $vHost->ServerName . '-access_log" common' . "\n";
-	        $template .= "    " . '<Directory "'. $vHost->DocumentRoot . '">' . "\n";
-	        $template .= "    " . '    Options Indexes FollowSymLinks' . "\n";
-	        $template .= "    " . '    AllowOverride All' . "\n";
-	        $template .= "    " . '</Directory>' . "\n";
+            $template .= "    " . '<Directory "' . $vHost->DocumentRoot . '">' . "\n";
+            $template .= "    " . '    Options Indexes FollowSymLinks' . "\n";
+            $template .= "    " . '    AllowOverride All' . "\n";
+            $template .= "    " . '</Directory>' . "\n";
             $template .= '</VirtualHost>' . "\n";
         }
 
@@ -77,17 +82,17 @@ if(isset($_GET['updatehosts'])){
         } else {
             $vhostsFile = file_get_contents($vhostsLocation . $vhostsFileName);
 
-            $templateData = "\n" . '# ' . $postArray->hostname . ' | '. ((property_exists($vHost,'category'))?$vHost->category:'') .  "\n";
+            $templateData = "\n" . '# ' . $postArray->hostname . ' | ' . ((property_exists($vHost, 'category')) ? $vHost->category : '') . "\n";
             $templateData .= '<VirtualHost *:80>' . "\n";
             $templateData .= "    " . 'ServerAdmin email@email.com' . "\n";
             $templateData .= "    " . 'DocumentRoot "' . $postArray->DocumentRoot . '"' . "\n";
             $templateData .= "    " . 'ServerName ' . $postArray->ServerName . "\n";
             $templateData .= "    " . 'ErrorLog "/Applications/MAMP/logs/' . $postArray->ServerName . '-error_log"' . "\n";
             $templateData .= "    " . 'CustomLog "/Applications/MAMP/logs/' . $postArray->ServerName . '-access_log" common' . "\n";
-	        $templateData .= "    " . '<Directory "'. $postArray->DocumentRoot . '">' . "\n";
-	        $templateData .= "    " . '    Options Indexes FollowSymLinks' . "\n";
-	        $templateData .= "    " . '    AllowOverride All' . "\n";
-	        $templateData .= "    " . '</Directory>' . "\n";
+            $templateData .= "    " . '<Directory "' . $postArray->DocumentRoot . '">' . "\n";
+            $templateData .= "    " . '    Options Indexes FollowSymLinks' . "\n";
+            $templateData .= "    " . '    AllowOverride All' . "\n";
+            $templateData .= "    " . '</Directory>' . "\n";
             $templateData .= '</VirtualHost>' . "\n";
 
             $vhostsFile .= $templateData;
@@ -100,6 +105,6 @@ if(isset($_GET['updatehosts'])){
     echo json_encode($return);
 }
 
-if(isset($_GET['restart'])){
-	//shell_exec('/Applications/MAMP/bin/restart.sh;');
+if (isset($_GET['restart'])) {
+    //shell_exec('/Applications/MAMP/bin/restart.sh;');
 }
