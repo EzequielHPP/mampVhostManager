@@ -41,7 +41,7 @@ if (isset($_GET['addenewhost'])) {
     $postArray = json_decode($_POST['content']);
     $return = array();
 
-    if (!isset($postArray->DocumentRoot) || !isset($postArray->ServerName)) {
+    if (!isset($postArray->location) || !isset($postArray->url)) {
         $return = array('status' => 'failed', 'message' => 'missing parameters');
     } else {
 
@@ -50,15 +50,15 @@ if (isset($_GET['addenewhost'])) {
         $vhostData[] = array(
             "title" => $postArray->hostname,
             "category" => $postArray->category,
-            "location" => $postArray->DocumentRoot,
-            "url" => $postArray->ServerName
+            "location" => $postArray->location,
+            "url" => $postArray->url
         );
 
         saveJson($vhostData);
 
         if (substr(sprintf('%o', fileperms('/etc/hosts')), -4) === '0777') {
             @file_put_contents('/etc/hosts', '# ' . $postArray->hostname . "\n", FILE_APPEND);
-            @file_put_contents('/etc/hosts', '127.0.0.1     ' . $postArray->ServerName . "\n", FILE_APPEND);
+            @file_put_contents('/etc/hosts', '127.0.0.1     ' . $postArray->url . "\n", FILE_APPEND);
         }
 
         $return = array('status' => 'success', 'message' => '');
