@@ -3,7 +3,7 @@
  */
 $(document).ready(function () {
     $('li.showVHost').click(function () {
-        var virtual = $(this).attr('data-host');
+        let virtual = $(this).attr('data-host');
         $('form[role="form"]').hide();
         $('#' + virtual).show();
     });
@@ -17,7 +17,7 @@ $(document).ready(function () {
         $(this).click(function (e) {
             e.preventDefault();
             // updateAllvHosts();
-            var data = {
+            let data = {
                 "content": $(this).parents('form').serialize()
             };
 
@@ -26,8 +26,8 @@ $(document).ready(function () {
                 url: '/actions.php?updatehosts=true',
                 data: data,
                 success: function (response) {
-                    var responseDetails = JSON.parse(response);
-                    if (responseDetails.status == 'success') {
+                    let responseDetails = JSON.parse(response);
+                    if (responseDetails.status === 'success') {
                         // restart();
                         refresh();
                     } else {
@@ -45,7 +45,7 @@ $(document).ready(function () {
     $('.js-showForm').each(function () {
         $(this).click(function (e) {
             e.preventDefault();
-            var id = $(this).attr('href');
+            let id = $(this).attr('href');
             $(id).modal('show');
         });
 
@@ -56,7 +56,7 @@ $(document).ready(function () {
             e.preventDefault();
 
             if(confirm('Do you want to remove the vhost?')) {
-                var id = $(this).attr('href');
+                let id = $(this).attr('href');
                 $(id).remove();
                 $(this).parents('.card').remove();
 
@@ -68,18 +68,18 @@ $(document).ready(function () {
 });
 
 function updateAllvHosts(){
-    var json = buildJson();
-    var data = {
+    let json = buildJson();
+    let data = {
         "content": JSON.stringify(json)
     };
 
     $.ajax({
         type: "POST",
-        url: '/actions.php?updatehosts=true',
+        url: '/actions.php?updatehosts=true&force=true',
         data: data,
         success: function (response) {
-            var responseDetails = JSON.parse(response);
-            if (responseDetails.status == 'success') {
+            let responseDetails = JSON.parse(response);
+            if (responseDetails.status === 'success') {
                 // restart();
                 refresh();
             } else {
@@ -108,12 +108,12 @@ function restart(){
 
 
 function refresh() {
-    window.location = window.location;
+    location.reload();
 }
 
 function createNewEntry(){
-    var json = buildJson(true);
-    var data = {
+    let json = buildJson(true);
+    let data = {
         "content": JSON.stringify(json)
     };
 
@@ -122,16 +122,20 @@ function createNewEntry(){
         url: '/actions.php?addenewhost=true',
         data: data,
         success: function (response) {
-            var responseDetails = JSON.parse(response);
-            if (responseDetails.status == 'success') {
+            let responseDetails = JSON.parse(response);
+            console.log('success');
+            if (responseDetails.status === 'success') {
+            console.log('refresh');
                 refresh();
             } else {
+            console.log('alert');
                 alert(responseDetails.message);
             }
         },
         fail: function (response) {
+            console.log('fail');
             console.log(response);
-            alert('Couldn\'t save the brand at the moment');
+            alert('Couldn\'t save the host at the moment. ' + response.message);
         }
     });
 }
@@ -141,30 +145,28 @@ function buildJson(justNewHost) {
         justNewHost = false;
     }
 
-    var parent = '.real-content';
-    var json = [];
+    let parent = '.real-content';
+    let json = [];
     if(justNewHost){
-        parent = '#newwebsite';
+        parent = '#addHost';
         json = {};
     }
     $(parent).each(function(){
-        var tmpvhost = {};
+        let tmpvhost = {};
         $(this).find('input').each(function(){
-            if($(this).val() != ''){
+            if($(this).val() !== ''){
                 tmpvhost[$(this).attr('name')] = $(this).val();
             }
         });
         $(this).find('select').each(function(){
-            if($(this).find(":selected").val() != ''){
+            if($(this).find(":selected").val() !== ''){
                 tmpvhost[$(this).attr('name')] = $(this).find(":selected").val();
             }
         });
 
-        console.log(tmpvhost);
-
-        if(!justNewHost && tmpvhost['hostname'] != undefined){
+        if(!justNewHost && tmpvhost['hostname'] !== undefined){
             json.push(tmpvhost);
-        } else if(justNewHost && tmpvhost['hostname'] != undefined){
+        } else if(justNewHost && tmpvhost['hostname'] !== undefined){
             json = tmpvhost;
         }
     });
