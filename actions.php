@@ -13,13 +13,16 @@ function saveJson($vhostData)
 
     $vhostsLocation = '/Applications/MAMP/conf/apache/extra/';
     $vhostsFileName = 'httpd-vhosts.conf';
+    $vhostsSSLFileName = 'httpd-ssl.conf';
 
     $templateData = file_get_contents('templates/vconf.template.conf');
+    $templateSSLData = file_get_contents('templates/vconfSSL.template.conf');
 
     foreach ($vhostData as $data) {
 
         if(property_exists($data, 'title') && !is_null($data->title) && $data->title !== '') {
 
+            $templateData .= "\n" . '# ' . $data->title . "\n";
             $templateData .= "\n" . '# ' . $data->title . "\n";
             $templateData .= '<VirtualHost *:80>' . "\n";
             $templateData .= "    " . 'ServerAdmin email@email.com' . "\n";
@@ -34,10 +37,32 @@ function saveJson($vhostData)
             $templateData .= "    " . '    allow from all' . "\n";
             $templateData .= "    " . '</Directory>' . "\n";
             $templateData .= '</VirtualHost>' . "\n";
+
+            $templateSSLData .= "\n" . '# ' . $data->title . "\n";
+            $templateSSLData .= "<VirtualHost *:443>" . "\n";
+            $templateSSLData .= '   DocumentRoot "'.$data->location.'"' . "\n";
+            $templateSSLData .= "   ServerName ". $data->url.":443" . "\n";
+            $templateSSLData .= '   ErrorLog "/Applications/MAMP/logs/' . $data->url . '-error_log"' . "\n";
+            $templateSSLData .= '   CustomLog "/Applications/MAMP/logs/' . $data->url . '-access_log" common'. "\n";
+            $templateSSLData .= "\n";
+            $templateSSLData .= "    SSLEngine on". "\n";
+            $templateSSLData .= "    SSLProtocol all -SSLv2". "\n";
+            $templateSSLData .= "    SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5". "\n";
+            $templateSSLData .= "    SSLCertificateFile ".__DIR__."/certificate/server.crt". "\n";
+            $templateSSLData .= "    SSLCertificateKeyFile ".__DIR__."/certificate/server.key". "\n";
+            $templateSSLData .= "\n";
+            $templateSSLData .= '    <Directory "' . $data->location . '">'. "\n";
+            $templateSSLData .= '       Options Indexes FollowSymLinks MultiViews'. "\n";
+            $templateSSLData .= "       AllowOverride All". "\n";
+            $templateSSLData .= '       Order allow,deny'. "\n";
+            $templateSSLData .= "       allow from all". "\n";
+            $templateSSLData .= "    </Directory>". "\n";
+            $templateSSLData .= "</VirtualHost>". "\n";
         }
     }
 
     file_put_contents($vhostsLocation . $vhostsFileName, $templateData);
+    file_put_contents($vhostsLocation . $vhostsSSLFileName, $templateSSLData);
     file_put_contents('hosts.json', json_encode($vhostData));
 }
 
